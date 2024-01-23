@@ -86,20 +86,14 @@ function addGalleryTemplate(images) {
 function render() {
   const markup = addGalleryTemplate(images);
   gallery.innerHTML = markup;
-  const galleryLinks = document.querySelectorAll(".gallery-link");
-  galleryLinks.forEach((link) => {
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-    });
-  });
 }
 
 render();
 
-let openModal = false;
-
 gallery.addEventListener("click", (e) => {
-  if (e.target === e.currentTarget) return;
+  e.preventDefault();
+
+  if (e.target.tagName !== "IMG") return;
 
   const previewImage = e.target.getAttribute("data-source");
   const instance = basicLightbox.create(
@@ -107,24 +101,20 @@ gallery.addEventListener("click", (e) => {
       <img src="${previewImage}" width="1112" height="640" alt="image">
   `,
     {
-      onShow: (instance) => {
-        openModal = true;
+      onShow: () => {
+        document.body.classList.add("modal-open");
         document.addEventListener("keydown", closeModal);
       },
-      onClose: (instance) => {
-        openModal = false;
+      onClose: () => {
+        document.body.classList.remove("modal-open");
         document.removeEventListener("keydown", closeModal);
       },
     }
   );
+
   function closeModal(e) {
-    if (openModal && e.code === "Escape") instance.close();
+    if (e.code === "Escape") instance.close();
   }
 
   instance.show();
 });
-
-
-document.addEventListener('click', onDocumentClick);
-
-function onDocumentClick(e) {}
